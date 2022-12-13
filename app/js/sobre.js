@@ -1,15 +1,18 @@
-const fecharButton = document.querySelector("#linkFechar")
-const linkSistemaFR = document.querySelector("#linkSistemaFR")
-const versionElectron = document.querySelector("#versionElectron")
-const versionNodeJS = document.querySelector("#versionNodeJS")
+const { ipcRenderer, shell } = require('electron');
+    const process = require('process');
 
-fecharButton.addEventListener('click', () => {
-    window.api.send('fechar-janela')
+let linkFechar = document.querySelector("#link-fechar");
+let linkTwitter = document.querySelector("#link-twitter");
+let versaoElectron = document.querySelector('#versao-electron');
+
+window.onload = function(){
+    versaoElectron.textContent = process.versions.electron;
+}
+
+linkFechar.addEventListener('click', function () {
+    ipcRenderer.send('fechar-janela-sobre');
 })
 
-linkSistemaFR.addEventListener('click', () => {
-    window.api.send('link-sistema-fr')
+linkTwitter.addEventListener('click', function () {
+    shell.openExternal("https://www.twitter.com/dquintanilhas");
 })
-
-versionElectron.textContent = window.api.versionElectron()
-versionNodeJS.textContent = window.api.versionNodeJS()
