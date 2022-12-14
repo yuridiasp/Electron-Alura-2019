@@ -1,10 +1,12 @@
 const { app, BrowserWindow, ipcMain, shell } = require("electron")
-const { dirname } = require("path")
 const path = require('path')
+const moment = require('moment')
+
+let mainWindow
 
 app.on('ready', () => {
     console.log('Aplicacao iniciada')
-    let mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 600,
         height: 400,
         webPreferences: {
@@ -29,7 +31,6 @@ ipcMain.on('abrir-janela-sobre', () => {
             width: 300,
             height: 200,
             webPreferences: {
-                contextIsolation: true,
                 preload: path.join(__dirname, 'preload.js')
             },
             alwaysOnTop: true,
@@ -43,10 +44,23 @@ ipcMain.on('abrir-janela-sobre', () => {
     sobreWindow.loadURL(sobreHtml)
 })
 
-ipcMain.on('fechar-janela', () => {
+ipcMain.on('fechar-janela-sobre', () => {
     sobreWindow.close()
 })
 
-ipcMain.on('link-sistema-fr', () => {
-    shell.openExternal('http://fabioribeiro.eastus.cloudapp.azure.com/')
+ipcMain.on('link-twitter', () => {
+    shell.openExternal("https://www.twitter.com/dquintanilhas")
+})
+
+ipcMain.on('receiveFromMomenteDuration', (event, stringTime) => {
+    let segundos = moment.duration(stringTime).asSeconds()
+    
+    function segundosParaTempo (segundos) {
+        segundos++
+        return moment().startOf('day').seconds(segundos).format("HH:mm:ss")
+    }
+    
+    let tempo = segundosParaTempo(segundos)
+
+    event.returnValue = tempo
 })

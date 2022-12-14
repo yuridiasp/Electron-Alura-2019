@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld('api', {
     },
     versionNodeJS: function () {
         return process.version
+    },
+    momenteDuration: function (time) {
+        let result = ipcRenderer.sendSync('receiveFromMomenteDuration', time)
+        return result
     }
 })
