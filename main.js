@@ -1,8 +1,11 @@
-const { app, BrowserWindow, ipcMain, shell } = require("electron")
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, globalShortcut } = require("electron")
 const path = require('path')
 const moment = require('moment')
+const data = require('./data.js')
+const templateGenerator = require('./template')
 
 let mainWindow
+let tray = null
 
 app.on('ready', () => {
     console.log('Aplicacao iniciada')
@@ -13,6 +16,18 @@ app.on('ready', () => {
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js')
         }
+    })
+    const icon =  `${__dirname}/app/img/icon-tray.png`
+    tray = new Tray(icon)
+    const template = templateGenerator.geraTrayTemplate(mainWindow, 'logica-programação')
+    const trayMenu = Menu.buildFromTemplate(template)
+    tray.setContextMenu(trayMenu)
+    let templateMenu = templateGenerator.geraMenuPrincipalTemplate(app)
+    let menuPrincipal = Menu.buildFromTemplate(templateMenu)
+    Menu.setApplicationMenu(menuPrincipal)
+    const ret = globalShortcut.register('CmdOrCtrl + Shift + S', () => {
+        console.log('Atalho executado')
+        mainWindow.send('atalho-iniciar-parar', 'ok')
     })
     const indexHtml = path.join(__dirname, 'app/index.html')
     mainWindow.loadURL(indexHtml)
@@ -49,7 +64,7 @@ ipcMain.on('fechar-janela-sobre', () => {
 })
 
 ipcMain.on('link-twitter', () => {
-    shell.openExternal("https://www.twitter.com/dquintanilhas")
+    shell.openExternal("https://www.twitter.com/YuriDias_P")
 })
 
 ipcMain.on('receiveFromMomenteDuration', (event, stringTime) => {
@@ -63,4 +78,23 @@ ipcMain.on('receiveFromMomenteDuration', (event, stringTime) => {
     let tempo = segundosParaTempo(segundos)
 
     event.returnValue = tempo
+})
+
+ipcMain.on('curso-parado', (event, curso, tempoEstudando) => {
+    data.salvaDados(curso, tempoEstudando)
+})
+
+ipcMain.on('carregar-dados-curso', async (event, curso) => {
+    let dados = await data.lerAquivoCurso(curso)
+    if (dados) {
+        event.returnValue = dados['tempo']
+    } else {
+        event.returnValue = '00:00:00'
+    }
+})
+
+ipcMain.on('curso-adicionado', (event, curso) => {
+    const novoTemplate = templateGenerator.adicionaCursoTray(mainWindow, curso)
+    const novoTrayMenu = Menu.buildFromTemplate(novoTemplate)
+    tray.setContextMenu(novoTrayMenu)
 })

@@ -13,7 +13,7 @@
         <h1 class="titulo">Alura Timer</h1>
         <div class="timer">
             <div class="relogio">
-                <span class="tempo">00:10:23</span>
+                <span class="tempo">00:00:00</span>
             </div><!--
             --><div class='controles'>
                 <img class="botao-play" src="img/play-button.svg">
@@ -21,12 +21,17 @@
             <div class="curso-container">
                 <span class="curso">logica-programação</span>
             </div>
-            <div class="curso-container reset">
-                <span class="reset-timer">Resetar Timer</span>
-            </div>
+        </div>
+
+        <div class="group">
+          <input type="text" class='campo-adicionar' required>
+          <img src="img/plus-button.png" class='botao-adicionar'>
+          <span class="highlight"></span>
+          <span class="bar"></span>
+          <label>Novo curso</label>
         </div>
 
     </section>
-    <script type="module" src='./js/renderer.js'></script>
+    <script type="module" src="./js/renderer.js"></script>
 </body>
 </html>
